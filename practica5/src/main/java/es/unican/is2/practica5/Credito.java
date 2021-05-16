@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
-
+// Total: WMC=16 CCog=7
 public class Credito extends Tarjeta {
 	
 	private double mCredito;

@@ -1,4 +1,4 @@
-package es.unican.is2.practica5;
+package es.unican.is2.practica5refactorizada;
 
 import java.util.List;
 
@@ -19,8 +19,8 @@ public class CuentaValores extends Cuenta {
 	}
 	
 	// WMC=1 CCog=0
-	public void anhadeValor(Valor v) { // WMC+1 CCog+0
-		valores.add(v);
+	public void anhadeValor(Valor valor) { // WMC+1 CCog+0
+		valores.add(valor);
 	}
 	
 	

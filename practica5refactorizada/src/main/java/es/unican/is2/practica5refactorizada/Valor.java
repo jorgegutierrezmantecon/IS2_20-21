@@ -1,4 +1,4 @@
-package es.unican.is2.practica5;
+package es.unican.is2.practica5refactorizada;
 
 // Total: WMC=6 CCog=0
 public class Valor {

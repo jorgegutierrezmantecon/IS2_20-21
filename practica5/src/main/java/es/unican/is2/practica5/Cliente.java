@@ -3,6 +3,7 @@ package es.unican.is2.practica5;
 import java.util.LinkedList;
 import java.util.List;
 
+// Total: WMC=8 CCog=10
 public class Cliente {
 	
 	public String nombre;

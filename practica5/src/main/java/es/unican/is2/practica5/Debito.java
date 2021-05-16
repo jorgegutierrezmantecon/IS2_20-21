@@ -2,6 +2,7 @@ package es.unican.is2.practica5;
 
 import java.time.LocalDate;
 
+// Total: WMC=8 CCog=2
 public class Debito extends Tarjeta {
 	
 	private double saldoDiarioDisponible;

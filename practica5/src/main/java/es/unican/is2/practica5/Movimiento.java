@@ -2,6 +2,7 @@ package es.unican.is2.practica5;
 
 import java.time.LocalDateTime;
 
+// Total: WMC=6 CCog=0
 public class Movimiento {
 	private String mConcepto;
 	private LocalDateTime mFecha;

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
+// Total: WMC=18 CCog=7
 public class CuentaAhorro extends Cuenta {
 
 	private List<Movimiento> mMovimientos;
