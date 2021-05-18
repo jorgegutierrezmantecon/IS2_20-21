@@ -1,4 +1,4 @@
-package es.unican.is2.practica5;
+package es.unican.is2.practica6;
 
 import static org.junit.Assert.assertTrue;
 
@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-
 
 public class CuentaValoresTest {
 	private CuentaValores sut;
