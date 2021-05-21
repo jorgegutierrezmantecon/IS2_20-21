@@ -1,5 +1,6 @@
 package es.unican.is2.practica6;
 
+// Total: WMC=6 CCog=0
 public class Valor {
 	
 	private String entidad;	

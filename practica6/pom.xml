@@ -33,7 +33,9 @@
   
   
 <properties>
-	<sonar.projectKey>Carlos-Practica5-SinRefactorizar</sonar.projectKey>
-	<sonar.projectName>Carlos-Practica5-SinRefactorizar</sonar.projectName>
+	<maven.compiler.source>1.7</maven.compiler.source>
+	<maven.compiler.target>1.7</maven.compiler.target>
+	<sonar.projectKey>es.unican.is2:practica6</sonar.projectKey>
+	<sonar.projectName>Jorge-Vero-Practica6Provisional</sonar.projectName>
 </properties>
 </project>

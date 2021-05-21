@@ -2,41 +2,34 @@ package es.unican.is2.practica6;
 
 import java.time.LocalDate;
 
+// Total: WMC=8 CCog=1
 public class TarjetaDebito extends Tarjeta {
 	
 	private double saldoDiarioDisponible;
+	private double limiteDebito;
+	private static final double LIMITE_INICIAL = 1000; // ponemos el limite de debito como una constante
 
 	// WMC=1 CCog=0
-	public TarjetaDebito(String numero, String titular, CuentaAhorro c) { // WMC+1 CCog+0
-		super(numero, titular, c);
+	public TarjetaDebito(String numero, String titular, CuentaAhorro cuenta, LocalDate fechaDeCaducidad) { // WMC+1 CCog+0
+		super(numero, titular, cuenta, fechaDeCaducidad);
+		limiteDebito = LIMITE_INICIAL;
 	}
 	
 	
-	// WMC=2 CCog=1
+	// WMC=1 CCog=0
 	@Override
-	public void retirar(double x) throws saldoInsuficienteException, datoErroneoException { // WMC+1 CCog+0
-		comprobarSaldo(x);
-		this.mCuentaAsociada.retirar("Retirada en cajero automático", x);
-		saldoDiarioDisponible-=x;
-	}
-	
-	// WMC=2 CCog=1
-	@Override
-	public void pagoEnEstablecimiento(String datos, double x) throws saldoInsuficienteException, datoErroneoException { // WMC=1 CCog=0
-		comprobarSaldo(x);
-		this.mCuentaAsociada.retirar("Compra en : " + datos, x);
-		saldoDiarioDisponible-=x;
-	}
-	
-	private void comprobarSaldo(double x) throws saldoInsuficienteException {
-		if (saldoDiarioDisponible<x) { // WMC+1 CCog+1
-			throw new saldoInsuficienteException("Saldo insuficiente");
-		}
+	public void retirarEnCajero(double importe) throws SaldoInsuficienteException, DatoErroneoException { // WMC+1 CCog+0
+		comprobarSaldoCorrecto(importe);
+		this.cuentaAsociada.retirar("Retirada en cajero automático", importe);
+		saldoDiarioDisponible-=importe;
 	}
 	
 	// WMC=1 CCog=0
-	public LocalDate getCaducidadDebito() { // WMC+1 CCog+0
-		return this.mCuentaAsociada.getCaducidadDebito();
+	@Override
+	public void pagoEnEstablecimiento(String datos, double importe) throws SaldoInsuficienteException, DatoErroneoException { // WMC+1 CCog+0
+		comprobarSaldoCorrecto(importe);
+		this.cuentaAsociada.retirar("Compra en : " + datos, importe);
+		saldoDiarioDisponible-=importe;
 	}
 	
 	/**
@@ -44,12 +37,19 @@ public class TarjetaDebito extends Tarjeta {
 	 */
 	// WMC=1 CCog=0
 	public void restableceSaldo() { // WMC+1 CCog+0
-		saldoDiarioDisponible = mCuentaAsociada.getLimiteDebito(); 
+		saldoDiarioDisponible = limiteDebito; 
 	}
 	
 	// WMC=1 CCog=0
-	public CuentaAhorro getCuentaAsociada() { // WMC+1 CCog+0
-		return mCuentaAsociada;
+	public double getLimiteDebito() { // WMC+1 CCog+0
+		return limiteDebito;
+	}
+	
+	// WMC=2 CCog=1
+	private void comprobarSaldoCorrecto(double importe) throws SaldoInsuficienteException { // WMC+1 CCog+0
+		if (saldoDiarioDisponible<importe) { // WMC+1 CCog+1
+			throw new SaldoInsuficienteException("Saldo insuficiente");
+		}
 	}
 
 }

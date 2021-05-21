@@ -5,114 +5,99 @@ import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.List;
 
-
+// Total: WMC=15 CCog=4
 public class TarjetaCredito extends Tarjeta {
 	
-	private double mCredito;
-	private List<Movimiento> mMovimientosMensuales;
-	private List<Movimiento> mhistoricoMovimientos;
+	private double credito;
+	private List<Movimiento> movimientosMensuales;
+	private List<Movimiento> historicoMovimientos;
+	private static final double COMISION = 0.05;
 	
 	// WMC=1 CCog=0
-	public TarjetaCredito(String numero, String titular, CuentaAhorro c, double credito) { // WMC+1 CCog+0
-		super(numero, titular, c);
-		mCredito = credito;
-		mMovimientosMensuales = new LinkedList<Movimiento>();
-		mhistoricoMovimientos = new LinkedList<Movimiento>();
-	}
-
-	private void compruebaCantidadCorrecta(double x) throws datoErroneoException {
-		if (x<0) // WMC+1 CCog+1
-			throw new datoErroneoException("No se puede retirar una cantidad negativa");
+	public TarjetaCredito(String numero, String titular, CuentaAhorro cuenta, double credito, LocalDate fechaDeCaducidad) { // WMC+1 CCog+0
+		super(numero, titular, cuenta, fechaDeCaducidad);
+		this.credito = credito;
+		movimientosMensuales = new LinkedList<Movimiento>();
+		historicoMovimientos = new LinkedList<Movimiento>();
 	}
 
 	@Override
-	// WMC=3 CCog=2
-	public void pagoEnEstablecimiento(String datos, double x) throws saldoInsuficienteException, datoErroneoException { // WMC+1 CCog+0
-		compruebaCantidadCorrecta(x);
-		
-		if (getGastosAcumulados() + x > mCredito) // WMC+1 CCog+1
-			throw new saldoInsuficienteException("Saldo insuficiente");
-		
-		Movimiento m = new Movimiento();
-		LocalDateTime now = LocalDateTime.now();
-		m.setFecha(now);
-		m.setConcepto("Compra a crédito en: " + datos);
-		m.setImporte(-x);
-		mMovimientosMensuales.add(m);
-	}
-	
-	// WMC=2 CCog=1
-    public double getGastosAcumulados() { // WMC+1 CCog+0
-		double r;
-		r = getImporteMovimientos();
-		return -r;
-	}
-
-	private double getImporteMovimientos() {
-		double r = 0;
-		for (int i = 0; i < this.mMovimientosMensuales.size(); i++) { // WMC+1 CCog+1
-			Movimiento m = (Movimiento) mMovimientosMensuales.get(i);
-			r += m.getImporte();
-		}
-		return r;
-	}
-	
 	// WMC=1 CCog=0
-	public LocalDate getCaducidadCredito() { // WMC+1 CCog+0
-		return this.mCuentaAsociada.getCaducidadCredito();
+	public void pagoEnEstablecimiento(String datos, double importe) throws SaldoInsuficienteException, DatoErroneoException { // WMC+1 CCog+0
+		compruebaCantidadCorrecta(importe);
+		compruebaSaldoCorrecto(importe, "Saldo insuficiente");		
+		anhadirMovimiento("Compra a crédito en: " + datos, importe);
+	}
+	
+	@Override
+	// WMC=1 CCog=0
+	public void retirarEnCajero(double importe) throws SaldoInsuficienteException, DatoErroneoException { // WMC+1 CCog+0
+		compruebaCantidadCorrecta(importe);		
+		importe += importe * COMISION; // Añadimos la comision		
+		compruebaSaldoCorrecto(importe, "Crédito insuficiente");		
+		anhadirMovimiento("Retirada en cajero automático", importe);
 	}
 
 	/**
 	 * Método que se invoca automáticamente el día 1 de cada mes
 	 */
-	// WMC=3 CCog=2
+	// WMC=2 CCog=1
 	public void liquidar() { // WMC+1 CCog+0
 		Movimiento liq = new Movimiento();
 		LocalDateTime now = LocalDateTime.now();
 		liq.setFecha(now);
 		liq.setConcepto("Liquidación de operaciones tarjeta crédito");
-		double r;
-		r = getImporteMovimientos();
-		liq.setImporte(r);
+		double importeTotal;
+		importeTotal = getImporteMovimientos();
+		liq.setImporte(importeTotal);
 	
-		if (r != 0) // WMC+1 CCog+1
-			mCuentaAsociada.addMovimiento(liq);
+		if (importeTotal != 0) // WMC+1 CCog+1
+			cuentaAsociada.addMovimiento(liq);
 		
-		mhistoricoMovimientos.addAll(mMovimientosMensuales);
-		mMovimientosMensuales.clear();
+		historicoMovimientos.addAll(movimientosMensuales);
+		movimientosMensuales.clear();
 	}
 
 	// WMC=1 CCog=0
 	public List<Movimiento> getMovimientosUltimoMes() {
-		return mMovimientosMensuales;
-	}
-	
-	// WMC=1 CCog=0
-	public Cuenta getCuentaAsociada() {
-		return mCuentaAsociada;
+		return movimientosMensuales;
 	}
 	
 	// WMC=1 CCog=0
 	public List<Movimiento> getMovimientos() {
-		return mhistoricoMovimientos;
+		return historicoMovimientos;
 	}
 	
-	public void retirar(double x) throws saldoInsuficienteException, datoErroneoException { // WMC+1 CCog+0
-		if (x<0) // WMC+1 CCog+1
-			throw new datoErroneoException("No se puede retirar una cantidad negativa");
-		
-		Movimiento m = new Movimiento();
+	// WMC=2 CCog=1
+	private void compruebaSaldoCorrecto(double importe, String mensaje) throws SaldoInsuficienteException { // WMC+1 CCog+0
+		if (-getImporteMovimientos() + importe > credito) // WMC+1 CCog+1
+			throw new SaldoInsuficienteException(mensaje);
+	}
+	
+	// WMC=2 CCog=1
+	private void compruebaCantidadCorrecta(double importe) throws DatoErroneoException { // WMC+1 CCog+0
+		if (importe<0) // WMC+1 CCog+1
+			throw new DatoErroneoException("No se puede retirar una cantidad negativa");
+	}
+	
+	// WMC=1 CCog=0
+	private void anhadirMovimiento(String concepto, double importe) { // WMC+1 CCog+0
+		Movimiento movimiento = new Movimiento();
 		LocalDateTime now = LocalDateTime.now();
-		m.setFecha(now);
-		m.setConcepto("Retirada en cajero automático");
-		x += x * 0.05; // Añadimos una comisión de un 5%
-		m.setImporte(-x);
-		
-		if (getGastosAcumulados()+x > mCredito) // WMC+1 CCog+1
-			throw new saldoInsuficienteException("Crédito insuficiente");
-		else {
-			mMovimientosMensuales.add(m);
+		movimiento.setFecha(now);
+		movimiento.setConcepto(concepto);
+		movimiento.setImporte(-importe);
+		movimientosMensuales.add(movimiento);
+	}
+	
+	// WMC=2 CCog=1
+	private double getImporteMovimientos() { // WMC+1 CCog+0
+		double importeTotal = 0;
+		for (int i = 0; i < this.movimientosMensuales.size(); i++) { // WMC+1 CCog+1
+			Movimiento movimiento = movimientosMensuales.get(i);
+			importeTotal += movimiento.getImporte();
 		}
+		return importeTotal;
 	}
 
 }

@@ -3,54 +3,72 @@ package es.unican.is2.practica6;
 import java.util.LinkedList;
 import java.util.List;
 
+// Total: WMC=8 CCog=4
 public class Cliente {
 	
-	public String nombre;
-	public String calle;
-	public String zip;
-	public String localidad;
-	public String telefono;
-	public String dni;
-	
-    private List<Cuenta> Cuentas = new LinkedList<Cuenta>();
+	private String nombre;
+	private Direccion direccion;
+	private String telefono;
+	private String dni;
 
-    // WMC = 1 CCog = 0
- 	public Cliente(String titular, String calle, String zip, String localidad, 
- 			String telefono, String dni) {  // WMC+1
+	private List<Cuenta> cuentas = new LinkedList<Cuenta>();
+
+    // WMC=1 CCog=0
+ 	public Cliente(String titular, Direccion direccion, String telefono, String dni) {  // WMC+1 CCog+0
 		this.nombre = titular;
-		this.calle = calle;
-		this.zip = zip;
-		this.localidad = localidad;
+		this.direccion = direccion;
 		this.telefono = telefono;
 		this.dni = dni;
 	}
 	
- 	// WMC = 1 CCog = 0
-	public void cambiaDireccion(String calle, String zip, String localidad) { // WMC+1
-		this.calle = calle;
-		this.zip = zip;
-		this.localidad = localidad;
+ 	// WMC=1 CCog=0
+	public void cambiaDireccion(Direccion direccion) { // WMC+1 CCog+0
+		this.direccion = direccion;
 	}
 	
-	// WMC=5 CCog=10
-	public double getSaldoTotal() { // WMC+1 Ccog+0
+	// WMC=2 CCog=1
+	public double getSaldoTotal() { // WMC+1 CCog+0
 		double total = 0.0;
-		for (Cuenta c: Cuentas) { // WMC+1 Ccog+1  
-			if (c instanceof CuentaAhorro) { // WMC+1 Ccog+2
-				total += ((CuentaAhorro) c).getSaldo();
-			} else 
-				if (c instanceof CuentaValores)  { // WMC+1 CCog+3
-					for (Valor v: ((CuentaValores) c).getValores()) { // WMC+1 CCog+4
-						total += v.getCotizacionActual()*v.getNumValores();
-					}
+		for (Cuenta cuenta: cuentas) { // WMC+1 CCog+1  
+			total += getSaldoCuenta(cuenta);
+		}
+		return total;
+	}
+
+	// Metodo que realiza el calculo del saldo de una cuenta
+	// WMC=3 CCog=3
+	private double getSaldoCuenta(Cuenta cuenta) { // WMC+1 CCog+0
+		double total = 0.0;
+		if (cuenta instanceof CuentaAhorro) { // WMC+1 CCog+1
+			total = ((CuentaAhorro) cuenta).getSaldo();
+		} else { 
+			for (Valor valor: ((CuentaValores) cuenta).getValores()) { // WMC+1 CCog+2
+				total += valor.getCotizacionActual()*valor.getNumValores();
 			}
 		}
 		return total;
 	}
 	
 	// WMC=1 CCog=0
-	public void anhadeCuenta(Cuenta c) { // WMC+1 CCog+0
-		Cuentas.add(c);
+	public void anhadeCuenta(Cuenta cuenta) { // WMC+1 CCog+0
+		cuentas.add(cuenta);
+	}
+	
+	// METODOS GETTERS DE LOS ATRIBUTOS PRIVADOS
+    public String getNombre() {
+		return nombre;
+	}
+
+	public Direccion getDireccion() {
+		return direccion;
+	}
+
+	public String getTelefono() {
+		return telefono;
+	}
+
+	public String getDni() {
+		return dni;
 	}
 	
 }

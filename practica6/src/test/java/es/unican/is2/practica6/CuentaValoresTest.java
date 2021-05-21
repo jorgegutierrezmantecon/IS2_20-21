@@ -1,6 +1,6 @@
 package es.unican.is2.practica6;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -21,13 +21,13 @@ public class CuentaValoresTest {
 	
 	@Test
 	public void testConstructor() {
-		assertTrue(sut.getNumCuenta().equals("794311"));
-		assertTrue(sut.getValores().size()==2);
+		assertEquals("794311",sut.getNumCuenta());
+		assertEquals(2,sut.getValores().size());
 	}
 	
 	@Test
 	public void testAnhadeValor() {
 		sut.anhadeValor(new Valor("Telepizza", 25, 1.05));
-		assertTrue(sut.getValores().size()==3);
+		assertEquals(3,sut.getValores().size());
 	}
 }

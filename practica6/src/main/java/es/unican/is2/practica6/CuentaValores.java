@@ -2,6 +2,7 @@ package es.unican.is2.practica6;
 
 import java.util.List;
 
+// Total: WMC=3 CCog=0
 public class CuentaValores extends Cuenta {
 
 	private List<Valor> valores;
@@ -18,8 +19,8 @@ public class CuentaValores extends Cuenta {
 	}
 	
 	// WMC=1 CCog=0
-	public void anhadeValor(Valor v) { // WMC+1 CCog+0
-		valores.add(v);
+	public void anhadeValor(Valor valor) { // WMC+1 CCog+0
+		valores.add(valor);
 	}
 	
 	
